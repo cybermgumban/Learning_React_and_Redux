@@ -1,2 +1,2 @@
-# React_and_Redux
-React_and_Redux
+# Learning_React_and_Redux
+Learning_React_and_Redux
