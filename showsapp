@@ -1,0 +1,184 @@
+index.js
+var React = require("react");
+var ReactDOM = require("react-dom");
+var Show = require("./shows");
+var shows = require("./show");
+
+ReactDOM.render (
+    <Show show={shows} /*showIndex={2}*/ />    ,
+    document.getElementById("root")
+);
+
+
+
+==============================================================
+
+shows.json
+[
+  {
+    "title": "Friends",
+    "poster": "https://www.movieposter.com/posters/archive/main/52/MPW-26106",
+    "plot": "Follows the personal and professional lives of six 20 to 30-something-year-old friends living in Manhattan.",
+    "imdbRating": "9.0"
+  },
+  {
+    "title": "Game of Thrones",
+    "plot": "Nine noble families fight for control over the mythical lands of Westeros. Meanwhile, a forgotten race hell-bent on destruction returns after being dormant for thousands of years.",
+    "poster": "https://cdn.cloudpix.co/images/game-of-thrones/game-of-thrones-poster-eb4051280faa7b786d82613fc4909011-large-404463.jpg",
+    "imdbRating": "9.5"
+  },
+  {
+    "title": "Sherlock",
+    "plot": "A modern update finds the famous sleuth and his doctor partner solving crime in 21st century London.",
+    "poster": "http://www.gbposters.com/media/catalog/product/cache/1/small_image/293x440/9df78eab33525d08d6e5fb8d27136e95/s/h/sherlock-bride-portrait-maxi-poster-1.16.jpg",
+    "imdbRating": "9.2"
+  }
+]
+
+
+================================================================
+
+shows.js
+var React = require("react");
+//var createClass = require("create-react-class");
+
+class Title extends React.Component {
+    render() {
+        return (
+            <h5>Title: {this.props.showTitle}</h5>
+        );
+    }
+}
+
+/* 
+var Title = createClass ({
+    render: function () {
+        return (
+            <h5>Title: {this.props.showTitle}</h5>
+        );
+    }
+});
+*/
+
+class Poster extends React.Component {
+    render () {
+        return (
+            <img src={this.props.showPoster} alt="Show Poster" style={{height:400, width: 400}} />
+        );
+    }
+}
+
+/*
+var Poster = createClass ({
+    render: function () {
+        return (
+            <img src={this.props.showPoster} alt="Show Poster" style={{height:400, width: 400}} />
+        );
+    }
+});
+*/
+
+class ShowInfo extends React.Component {
+    render() {
+        return (
+            <div>
+            <p>Plot: {this.props.showPlot}</p>
+            <h5>IMDB Rating: {this.props.showRating}</h5>
+            </div>
+        );
+    }
+}
+
+/*
+var ShowInfo = createClass ({
+    render: function () {
+        return (
+            <div>
+            <p>Plot: {this.props.showPlot}</p>
+            <h5>IMDB Rating: {this.props.showRating}</h5>
+            </div>
+        );
+    }
+});
+*/
+
+class Show extends React.Component {
+    static defaultProps = {
+        showIndex: 0
+    };
+
+    constructor (props) {
+        super (props);
+        this.state = {
+            showIndex: this.props.showIndex
+        };
+    }
+
+    handleBtnClick() {
+        var totalShows = this.props.show.length;
+
+        this.setState(function(prevState) {
+            return {
+                showIndex: (prevState.showIndex + 1) % totalShows
+            };
+        });
+    }
+    
+    render () {
+        var show = this.props.show[this.state.showIndex];
+        return (
+            <div className="text-center">
+            <Title showTitle={show.title}/>
+            <Poster showPoster={show.poster}/>
+            <ShowInfo showPlot={show.plot} showRating={show.imdbRating}/>
+            <button onClick={this.handleBtnClick.bind(this)}>Next Show</button>
+            </div>
+        );
+    }
+}
+
+/*
+Show.defaultProps = {
+    showIndex: 0
+};
+*/
+
+/*
+var Show = createClass ({
+    getDefaultProps: function () {
+        return {
+            showIndex: 0
+        };
+    },
+    
+    getInitialState: function () {
+        return {
+            showIndex: (this.props.showIndex)
+        };
+    },
+
+    handleBtnClick: function() {
+        var totalShows = this.props.show.length;
+
+        this.setState(function(prevState) {
+            return {
+                showIndex: (prevState.showIndex + 1) % totalShows
+            };
+        });
+    },
+
+    render: function () {
+        var show = this.props.show[this.state.showIndex];
+        return (
+            <div className="text-center">
+            <Title showTitle={show.title}/>
+            <Poster showPoster={show.poster}/>
+            <ShowInfo showPlot={show.plot} showRating={show.imdbRating}/>
+            <button onClick={this.handleBtnClick}>Next Show</button>
+            </div>
+        );
+    }
+});
+*/
+
+module.exports = Show;
