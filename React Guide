@@ -517,3 +517,286 @@ ReactDOM.render (
 
 
 -----------------------------------------
+
+Using ES6 on classes
+
+var React = require("react");
+var ReactDOM = require("react-dom");
+
+/* Function Constructor */
+
+var Employee = function (firstName, lastName) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+};
+
+var sam = new Employee("Sam", "Williams");
+
+// console.log(sam);
+// console.log(Employee.prototype === sam.__proto__);
+
+Employee.prototype.getFullName = function () {
+    return this.firstName + " " + this.lastName;
+};
+
+//console.log(sam.getFullName());
+
+
+//Creating a copy of the method
+
+var Engineer = function(firstName, lastName, field) {
+Employee.call(this, firstName, lastName);
+this.field = field;
+};
+
+//Refrain of doing the below as this will change also the date in Employee when changes made in Engineer
+// Engineer.prototype = Employee.prototype
+
+//Instead use this, it will create copy of Employee.prototype
+Engineer.prototype = Object.create(Employee.prototype);
+Engineer.prototype.constructor = Engineer;
+
+Engineer.prototype.getDescription = function () {
+    return this.getFullName() + " is " + this.field + "Engineer";
+};
+
+var sam1 = new Engineer("Sam", "Williams", "Software");
+//console.log(sam1);
+//console.log(sam1.getFullName());
+//console.log(sam1.getDescription());
+
+
+
+
+
+
+
+/* ES6 Class */
+
+class EmployeeES6 {
+    constructor (firstName, lastName) {
+//        console.log("Inside EmployeeES6");
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    getFullName () {
+        return this.firstName + " " + this.lastName;
+    }
+}
+
+var sammy = new EmployeeES6 ("Sammy", "Winchester");
+// console.log(sammy);
+// console.log(sammy.getFullName());
+// console.log(EmployeeES6.prototype === sammy.__proto__);
+
+
+//to copy the prototype of EmployeeES6 to EngineerES6
+class EngineerES6 extends EmployeeES6 {
+//if no contructor has been defined, it will automatically create
+// constructor(...args) {
+//    super (...args);
+//}
+    constructor(firstName, lastName, field) {
+        super(firstName, lastName);
+        this.field = field;
+    }
+
+    //static is to put greeting only in class not in prototype
+    //static can only be accessed via class
+    static greeting () {
+        return "sayHi";
+    }
+
+    getDescription() {
+        return this.getFullName() + " is " + this.field + "Engineer";
+    }
+}
+
+var sammy1 = new EngineerES6 ("Sammy", "Winchester", "Electronics");
+console.log(EngineerES6.greeting());
+console.log(sammy1.getDescription());
+//console.log(sammy1.getFullName());
+//console.log(sammy1.getDescription());
+
+-----------------------------------------
+
+Pet App using the ref
+
+HomePage.js
+var React = require("react");
+var PetComponent = require("./PetComponent");
+
+var style = {
+    textAlign: "center",
+    fontSize: "2em",
+    color: "rebeccapurple"
+}
+
+var btnStyle = {
+    marginTop: "30px",
+    marginRight: "5px",
+    height: "25px"
+}
+
+class HomePage extends React.Component {
+    constructor(props){
+        super(props);
+        this.catComponentInstRef = null;
+        this.dogComponentInstRef = null;
+        this.handleShowWinnerBtnClick = this.handleShowWinnerBtnClick.bind(this);
+        this.handleStartOverBtnClick = this.handleStartOverBtnClick.bind(this);
+    }
+
+    handleShowWinnerBtnClick() {
+        console.log(this.catComponentInstRef);
+        console.log(this.dogComponentInstRef);
+
+        var catLikesCount = this.catComponentInstRef.state.likesCount;
+        var dogLikesCount = this.dogComponentInstRef.state.likesCount;
+
+        if (catLikesCount > dogLikesCount) {
+            console.log("Cat is the Winner");
+        } else if (catLikesCount < dogLikesCount) {
+            console.log("Dog is the Winner");
+        } else {
+            console.log("It's a Tie!");
+        }
+    }
+
+    handleStartOverBtnClick() {
+
+    }
+
+    render() {
+        return (
+        <div>
+        <h1 style={style}>
+            Welcome to Cat and Dog Cuteness Fight Game!!!
+        </h1>
+        <div style={{marginTop:60,textAlign:"center"}}>
+            <PetComponent 
+                petName="Cat"
+                ref={function(compInst) {this.catComponentInstRef = compInst;}.bind(this)}
+                petImage="http://www.cutestpaw.com/wp-content/uploads/2011/11/Henke.jpg"
+            />
+            <PetComponent 
+                petName="Dog" 
+                ref={function(compInst) {this.dogComponentInstRef = compInst;}.bind(this)}
+                petImage="http://images.all-free-download.com/images/graphicthumb/cute_dog_photo_picture_7_168843.jpg"
+            />
+        </div>
+        <div style={{textAlign:"center"}}>
+        <button style={btnStyle} onClick={this.handleShowWinnerBtnClick}>Show Winner</button>
+        <button style={btnStyle} onClick={this.handleStartOverBtnClick}>Start Over</button>
+        </div>
+        </div>
+        );
+    }
+}
+
+module.exports = HomePage;
+
+
+
+
+
+PetComponent.js
+var React = require("react");
+
+var compStyle = {
+    display: "inline-block",
+    marginLeft: "auto",
+    marginRight: "auto"
+}
+
+var btnStyle = {
+    height: "25px",
+    width: "70px",
+    marginTop: "10px",
+    marginLeft: "5px",
+    marginRight: "5px"
+}
+
+class PetComponent extends React.Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            likesCount: 0
+        };
+        this.handleLikeBtnClick = this.handleLikeBtnClick.bind(this);
+        this.handleDislikeBtnClick = this.handleDislikeBtnClick.bind(this);
+    }
+    handleLikeBtnClick() {
+        console.log(this.props.petName +" Component Like Button Clicked")
+/*        this.setState({
+            likesCount: this.state.likesCount + 1
+        }); */
+        this.setState(function(prevState){
+            return {
+            likesCount: prevState.likesCount + 1
+            };
+        });
+    }
+
+    handleDislikeBtnClick() {
+        console.log(this.props.petName +" Component DisLike Button Clicked")
+/*        this.setState({
+            likesCount: this.state.likesCount - 1
+        }); */
+        this.setState(function(prevState){
+            return {
+            likesCount: prevState.likesCount - 1
+            };
+        });
+    }    
+
+    render() {
+        return (
+            <div style={compStyle}>
+            <h3>{this.props.petName} Likes: {this.state.likesCount}</h3>
+            <img 
+                style={{height:400,width:400}}
+                src={this.props.petImage}
+                alt={"Cute "+this.props.petName}/>
+                    <br />
+                <button style={btnStyle} onClick={this.handleLikeBtnClick}>Like</button>
+                <button style={btnStyle} onClick={this.handleDislikeBtnClick}>Dislike</button>
+            </div>
+        );
+    }
+}
+
+module.exports = PetComponent;
+
+
+
+
+
+index.js
+var React = require("react");
+var ReactDOM = require("react-dom");
+var HomePage = require("./components/HomePage");
+
+ReactDOM.render(
+    <HomePage />,
+    document.getElementById("root")
+)
+
+
+
+-------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
