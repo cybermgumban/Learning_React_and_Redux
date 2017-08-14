@@ -1,0 +1,80 @@
+animal.js
+var React = require('react');
+var createClass = require('create-react-class');
+
+var Type = createClass ({
+    render: function () {
+        return (
+            <h2>Title: {this.props.showType}</h2>
+        );
+    }
+});
+
+var Poster = createClass ({
+    render: function () {
+        return (
+            <img src={this.props.showPoster} alt="Show Poster" style={{height: 400, width: 400}} />
+        );
+    }
+});
+
+var Show = createClass ({
+    getInitialState: function () {
+        return {
+            showIndex: 0
+        };
+    },
+
+    handleButtonClick: function () {
+        this.setState (function(prevState) {
+            return {
+                showIndex: (prevState.showIndex + 1) % this.props.show.length
+            };
+        });
+    },
+
+    render: function () {
+        return (
+            <div className="text-center">
+            <div>
+                <Type showType={this.props.show[this.state.showIndex].type} />
+                <Poster showPoster={this.props.show[this.state.showIndex].poster} />
+            </div>
+            <div>
+                <button onClick={this.handleButtonClick}>Next Animal</button>
+            </div>
+            </div>
+        );
+    }
+});
+
+module.exports = Show;
+
+
+===================================================
+
+animals.json
+[
+    {
+        "type": "Dog",
+        "poster": "http://www.insidedogsworld.com/wp-content/uploads/2016/03/Dog-Pictures.jpg"        
+    },
+    {
+        "type": "Cat",
+        "poster": "http://www.readersdigest.ca/wp-content/uploads/2011/01/4-ways-cheer-up-depressed-cat.jpg"
+    }
+]
+
+
+===================================================
+
+index.js
+var React = require('react');
+var ReactDOM = require('react-dom');
+var Show = require('./animal');
+var shows = require('./animals');
+
+ReactDOM.render (
+    <Show show={shows} />,
+    document.getElementById('root')
+);
