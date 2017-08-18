@@ -787,9 +787,54 @@ ReactDOM.render(
 
 -------------------------------------------
 
+Shallow Merge (Javascript code)
 
+var emp1 = {
+	name = "Sam",
+	designation = "App Developer",
+	friends = {
+		friend1 = "Jack", friend2 = "Mark"
+	}
+};
 
+var emp2 = {
+	name = "Williams",
+	age = 29,
+	friends = {
+		friend1 = "Steve", friend3 = "Adam"
+	}
+};
 
+//ShallowMerge: Object.assign() or _.extend()
+console.log(Object.assign(emp1, emp2));
+//emp1 is the target, emp2 is the source, so on and so forth
+//Layer 1 same fields will be overwritten, not included in target will be deleted, and new fields will be added
+/*Result
+	[object Object] {
+		age: 29,
+		designation: "App Developer",
+		friends: [object Object] {
+			friend1: "Steve",
+			friend3: "Adam"
+		}
+	}	
+*/
+
+//DeepMerge: (_.merge())
+console.log(_.merge(emp1, emp2));
+//All layers same fields will be overwritten, not included in the target field will be retained, and new fields will be added
+/*Result
+	[object Object]
+		age: 29,
+		designation: "App Developer",
+		friends: [object Object] {
+				friend1: "Steve",
+				friend2: "Mark",
+				friend3: "Adam"
+		},
+		name: "Williams"
+	}
+*/
 
 
 
